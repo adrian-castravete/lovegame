@@ -23,9 +23,7 @@
                (local-asset-path "cube.obj")
                (local-asset-path "white.png"))
              :diffuse [0.8 0.8 0.8]
-             :keys []
-             :yaw 0.0
-             :pitch 0.0
+             :angle 0.0
              :shader
              (love.graphics.newShader
                (local-path "default.vert")
@@ -47,17 +45,7 @@
     (o.model:draw o.shader))
     
   (fn cube.update [o dt]
-    (let [da dt]
-      (when o.keys.left (set o.yaw (- o.yaw da)))
-      (when o.keys.up (set o.pitch (- o.pitch da)))
-      (when o.keys.right (set o.yaw (+ o.yaw da)))
-      (when o.keys.down (set o.pitch (+ o.pitch da))))
-    (o.model:setRotation o.pitch o.yaw 0))
-
-  (fn cube.pressed [o btn]
-    (tset o.keys btn true))
-
-  (fn cube.released [o btn]
-    (tset o.keys btn false))
+    (set o.angle (+ dt o.angle))
+    (o.model:setRotation (* 0.618 o.angle) o.angle 0))
 
   cube)

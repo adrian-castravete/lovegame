@@ -1,5 +1,6 @@
 local cpath = ...
 local croot = cpath:gsub("%.[^%.]+$", "")
+local aroot = croot:gsub("%.", "/") .. "/assets"
 if cpath == croot then
 	croot = ""
 end
@@ -8,6 +9,7 @@ local lg = love.graphics
 
 local function bootstrap(gameModule, inputConfiguration, viewportConfiguration)
 	local whiteColor = love.getVersion() > 10 and {1, 1, 1} or {255, 255, 255}
+  local consoleFont = lg.newFont(aroot .. "/cnr.otf", 16)
 
 	-- Save ("freeze") loaded modules
 	local modules = {}
@@ -43,9 +45,8 @@ local function bootstrap(gameModule, inputConfiguration, viewportConfiguration)
 				love.draw = function ()
 					local w, h = lg.getDimensions()
 					lg.push()
-					lg.setColor(1.0, 0.75, 0.5)
-					lg.scale(2, 2)
-					lg.printf(tb, 0, 12, w)
+					lg.setColor(1.0, 0.5, 0.25)
+					lg.printf(tb, consoleFont, 0, 12, w)
 				    lg.pop()
 				end
 				love.touchpressed = function ()

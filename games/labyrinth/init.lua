@@ -1,4 +1,4 @@
-local mpath = ...
+local mpath = (...):gsub("%.[^%.]+$", "")
 local apath = mpath:gsub("%.", "/")
 
 local World = require(mpath .. ".worldgen")

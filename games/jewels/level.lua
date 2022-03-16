@@ -1,4 +1,4 @@
-local mpath = (...):gsub("%.[^%.]+$", "")
+local mpath = (...):gsub("%.[^%.]+", "")
 local lg = love.graphics
 local tiny = require "tiny"
 local class = require "mylove.class"

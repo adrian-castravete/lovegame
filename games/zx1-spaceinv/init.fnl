@@ -1,4 +1,4 @@
-(local mpath (: ... :gsub "%.[^%.]+$" ""))
+(local mpath ...)
 (local apath (: mpath :gsub "%." "/"))
 
 (local g3d (require "g3d"))
@@ -25,14 +25,16 @@
       shaders {:default [:vDefault :fDefault]
                :fire [:vDefault :fFire]}
       root {:delta 0
+            :zoom 120
             :ship nil
+            :buttons []
             :objects []
             :shaders (build-shaders shader-files shaders)}]
   (fn start []
     (let [c g3d.camera]
       (each [k v (pairs cam-start)]
         (tset c k v))
-      (c.updateOrthographicMatrix 20)
+      (c.updateOrthographicMatrix root.zoom)
       (c.updateViewMatrix))
     (let [ship (ship.new {:x 0
                           :y -100})]
@@ -43,7 +45,8 @@
       (for [i 1 9]
         (table.insert root.objects
           (alien.new
-            {:x (* (- i 5) 32)
+            {:kind j
+             :x (* (- i 5) 32)
              :y (- 100 (* 24 j))})))))
             
   (fn walk [elem fn-name enabler ...]
@@ -55,7 +58,27 @@
           (func obj ...)))))
 
   (fn update [dt]
-    (set root.delta (+ root.delta dt))
+    (let [r root
+          c g3d.camera
+          b r.buttons]
+      (var [x y z] c.position)
+      (set r.delta (+ r.delta dt))
+      (when b.start
+        (let [m (* 60 dt)]
+          (when b.up (set r.zoom (math.max 10 (- r.zoom m))))
+          (when b.down (set r.zoom (math.min 120 (+ r.zoom m)))))
+        (c.updateOrthographicMatrix r.zoom))
+      (when b.btnB
+        (let [m (/ r.zoom 120)]
+          (when b.left (set x (- x m)))
+          (when b.up (set y (+ y m)))
+          (when b.right (set x (+ x m)))
+          (when b.down (set y (- y m))))
+        (set x (math.max -160 (math.min 160 x)))
+        (set y (math.max -120 (math.min 120 y)))
+        (set c.position [x y z])
+        (set c.target [x y 0])
+        (c.updateViewMatrix)))
     (walk root :update :is-active dt root.delta))
    
   (fn draw []
@@ -63,10 +86,16 @@
     (walk root :draw :is-visible root.shaders))
 
   (fn pressed [btn]
-    (root.ship:pressed btn))
+    (let [b root.buttons]
+      (tset b btn true)
+      (when (not (or b.btnB b.start))
+        (root.ship:pressed btn))))
 
   (fn released [btn]
-    (root.ship:released btn))
+    (let [b root.buttons]
+      (tset b btn false)
+      (when (not (or b.bntB b.start))
+        (root.ship:released btn))))
 
   {: start
    : update

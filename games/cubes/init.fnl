@@ -1,5 +1,4 @@
-;(local mpath (: ... :gsub "%.[^%.]+$" ""))
-(local mpath ...)
+(local mpath (: ... :gsub "%.[^%.]+$" ""))
 (local apath (: mpath :gsub "%." "/"))
 
 (local lg love.graphics)
@@ -34,11 +33,9 @@
       (w.cube:draw)
       (w.light:draw)))
       
-  (fn pressed [btn]
-    (root.world.cube:pressed btn))
+  (fn pressed [])
   
-  (fn released [btn]
-    (root.world.cube:released btn))
+  (fn released [])
 
   {: start
    : update

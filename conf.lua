@@ -17,5 +17,5 @@ function love.conf(t)
 	w.usedpiscale = false
 	w.hidpi = false
 	w.fullscreentype = "desktop"
-	w.fullscreen = true
+	w.fullscreen = false
 end

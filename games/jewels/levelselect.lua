@@ -1,5 +1,4 @@
-local mpath = ...
-mpath = mpath:gsub("%.[^%.]+$", "")
+local mpath = (...):gsub("%.[^%.]+", "")
 local class = require "mylove.class"
 local Level = require(mpath .. ".level")
 

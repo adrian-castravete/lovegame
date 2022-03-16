@@ -3,12 +3,13 @@
 
 (local g3d (require "g3d"))
 
-(local common [])
-
 (fn local-asset-path [fname]
   (if (and fname (= (type fname) "string"))
     (.. apath "/assets/" fname)
     fname))
+
+(local common 
+  {:asset-path local-asset-path})
 
 (fn common.newObject [mesh tex ...]
   (let [o {:is-active true

@@ -82,4 +82,4 @@ local inputConfiguration = {
 }
 
 local bootstrap = require "mylove.bootstrap"
-bootstrap("games.cubes", inputConfiguration)
+bootstrap("games.miner", inputConfiguration)
