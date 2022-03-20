@@ -44,10 +44,14 @@ local function bootstrap(gameModule, inputConfiguration, viewportConfiguration)
 				print(tb)
 				love.draw = function ()
 					local w, h = lg.getDimensions()
+					local s = math.floor(w / 1000.0)
 					lg.push()
-					lg.setColor(1.0, 0.5, 0.25)
+					if s > 1 then
+					  lg.scale(s, s)
+					end
+					lg.setColor(1.0, 0.6, 0.5)
 					lg.printf(tb, consoleFont, 0, 12, w)
-				    lg.pop()
+					lg.pop()
 				end
 				love.touchpressed = function ()
 					reload()

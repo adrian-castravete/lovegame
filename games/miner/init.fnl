@@ -6,4 +6,8 @@
 (me.camera:viewport-size 180)
 (me.camera:position 0 0)
 
+(require (.. mpath ".world"))
+
+;(me.play :world)
+
 me

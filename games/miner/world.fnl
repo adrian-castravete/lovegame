@@ -1,12 +1,21 @@
 (local mpath (: ... :gsub "%.[^%.]+" ""))
 
-(local common (require (.. mpath ".common")))
-(local bg (require (.. mpath ".background")))
+(fn draw-bg [o c])
 
-(let [world []]
-  (fn world.new []
-    (let [w {:x 0
-             :y 0}]
-      (common.add-child w (bg.new))
-      w))
-  world)
+(fn draw-spr [o c])
+
+(fn update-spr [o dt])
+
+(me.scene :world
+  {:name "World"
+   :children
+   [{:id :bg
+     :name "Background"
+     :draw draw-bg}
+    {:id :spr
+     :name "Sprites"
+     :children 
+     [{:id :pl1
+       :name "Player"
+       :draw draw-spr
+       :update update-spr}]}]})
