@@ -1,15 +1,16 @@
 local cpath = ...
 local croot = cpath:gsub("%.[^%.]+$", "")
-local aroot = croot:gsub("%.", "/") .. "/assets"
 if cpath == croot then
 	croot = ""
 end
 
-local lg = love.graphics
+local _lg = love.graphics
 
-local function bootstrap(gameModule, inputConfiguration, viewportConfiguration)
+local function bootstrap(config)
+  local gameModule = config.gameModule or nil
+  local inputConfiguration = config.inputConfiguration or {}
 	local whiteColor = love.getVersion() > 10 and {1, 1, 1} or {255, 255, 255}
-  local consoleFont = lg.newFont(aroot .. "/cnr.otf", 16)
+	local fnt = _lg.newFont(croot .. "/assets/cm.ttf", 24)
 
 	-- Save ("freeze") loaded modules
 	local modules = {}
@@ -34,6 +35,25 @@ local function bootstrap(gameModule, inputConfiguration, viewportConfiguration)
 				package.loaded[key] = nil
 			end
 		end
+		_lg.setDefaultFilter("nearest", "nearest")
+		
+		if config.debugLayer then
+		  dbg = require("mylove.debugscr")
+		end
+		if config.globalEngine then
+		  myloveEngine = require("mylove.engine")
+		  if config.globalShortcuts then
+		    me = myloveEngine(gameModule)
+		  end
+		else
+		  myloveEngine = nil
+		  me = nil
+		end
+		if config.globalShortcuts then
+		  lg = love.graphics
+		else
+		  lg = nil
+		end
 
 		local function protect(func, level)
 			return xpcall(func, function (msg)
@@ -43,15 +63,9 @@ local function bootstrap(gameModule, inputConfiguration, viewportConfiguration)
 				tb = tb:gsub("\n+[^\n]+bootstrap%.lua.*", "")
 				print(tb)
 				love.draw = function ()
-					local w, h = lg.getDimensions()
-					local s = math.floor(w / 1000.0)
-					lg.push()
-					if s > 1 then
-					  lg.scale(s, s)
-					end
-					lg.setColor(1.0, 0.6, 0.5)
-					lg.printf(tb, consoleFont, 0, 12, w)
-					lg.pop()
+					local w, h = _lg.getDimensions()
+					_lg.setColor(1, 0.4, 0.2)
+					_lg.printf(tb, fnt, 0, 24, w)
 				end
 				love.touchpressed = function ()
 					reload()
@@ -65,11 +79,6 @@ local function bootstrap(gameModule, inputConfiguration, viewportConfiguration)
 		math.random()
 		math.random()
 		math.random()
-
-		local viewport = require(croot .. ".viewport")
-		if viewportConfiguration then
-			viewport.setup(viewportConfiguration)
-		end
 
 		local input = require(croot .. ".input")
 		function love.keyreleased(key)
@@ -103,46 +112,36 @@ local function bootstrap(gameModule, inputConfiguration, viewportConfiguration)
 		--]]
 
 		input.setup(inputConfiguration)
-
+		
 		-- Should we fail to require the game,
 		local ok = protect(function ()
 			local game = require(gameModule)
+			if not game or type(game) ~= "table" then
+			  error("Game module didn't return a table")
+			end
 			game.start()
-
-			function love.resize(w, h)
-				if viewportConfiguration then
-					viewport.resize(w, h)
-				elseif game.resize then
-					game.resize(w, h)
-				end
-				input.resize(w, h)
-			end
-	
-			function love.draw()
-				if viewportConfiguration then
-					viewport.draw()
-				elseif game.draw then
-					game.draw()
-				end
-				input.draw()
-			end
-			
 			function love.update(dt)
-				if viewportConfiguration then
-					lg.setCanvas({viewport.canvas, depth = true})
-				end
-				lg.setColor(whiteColor)
-				lg.clear(0, 0, 0)
 				local ok = protect(function ()
 					game.update(dt)
 				end, 3)
 				if not ok then
 					love.update = nil
 				end
-				if viewportConfiguration then
-					lg.setCanvas()
-				end
 			end
+			
+			function love.resize(w, h)
+  			game.resize(w, h)
+  			input.resize(w, h)
+  		end
+
+  		function love.draw()
+  			game.draw()
+  			input.draw()
+  			if dbg then
+  			  dbg.draw()
+  			end
+  		end
+
 			input.onButtonPressed(game.pressed)
 			input.onButtonReleased(function (btn)
 				if btn == "bootstrapReload" then

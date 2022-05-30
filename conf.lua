@@ -8,8 +8,8 @@ function love.conf(t)
 	local w = t.window
 	w.title = "Game"
 	w.icon = nil
-	w.width = 960
-	w.height = 720
+	w.width = 480
+	w.height = 360
 	w.depth = 16
 	w.minwidth = 480
 	w.minheight = 360

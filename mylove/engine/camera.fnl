@@ -11,9 +11,17 @@
       (let [height (or height width)]
         (copy s.viewport
           {: width
-           : height})))
+           : height})
+        (copy e.viewport
+          {: width
+           : height})
+        (e.resize)))
     
     (fn c.position [x y]
       (copy c {: x : y}))
-  
+    
+    (fn c.move [x y]
+      (set c.x (+ x c.x))
+      (set c.y (+ y c.y)))
+
     c))
