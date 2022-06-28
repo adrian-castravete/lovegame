@@ -20,9 +20,11 @@
 (fn plan-move [p o dx dy tout movement]
   (let [s p.state]
     (when o.alive
-      (when (and (= movement :right) (>= o.x 212))
+      (when (and (= movement :right) 
+                 (>= o.x 212))
         (set s.next-state :down-left))
-      (when (and (= movement :left) (<= o.x -212))
+      (when (and (= movement :left) 
+                 (<= o.x -212))
         (set s.next-state :down-right))
       (me.tween {:data {:obj o
                         :sx o.x
@@ -109,5 +111,5 @@
         :speed 1}
        :children enemies-a
        : enemies}
-      (ship 0 128)]}]
+      (ship 0 144)]}]
     (me.scene :invaders scene)))

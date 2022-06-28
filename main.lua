@@ -13,7 +13,7 @@ if srcDir:sub(-5, -1) ~= ".love" then
 end
 
 local config = {
-  gameModule = "games.zx1-spaceinv",
+  gameModule = "games.one-hit",
   globalShortcuts = true,
   globalEngine = true,
   debugLayer = true,

@@ -58,24 +58,32 @@
             (or o.-anim-data
               {:frame 0
                :time 0
+               :old-anim o.anim
                :quad
-               (lg.newQuad 
+               (lg.newQuad
                  start-x start-y o.w o.h iw ih)})
             {: frame 
              :time ti
+             : old-anim
              : quad} anim-data
             new-ti (+ ti dt)
             extra-frames (math.floor (/ new-ti frame-delay))
             new-frame 
             (% (+ frame extra-frames) max-frames)]
-        (when (~= frame new-frame)
-          (quad:setViewport
-            (+ (* new-frame o.w) start-x)
-            start-y
-            o.w o.h))
+        (when (or (~= frame new-frame) (~= o.anim old-anim))
+          (let [fi (. o.anims 
+                     (.. o.anim :-indices))
+                f (if fi (- (. fi (+ new-frame 1)) 1) new-frame)
+                (iw ih) (o.image:getDimensions)]
+            (quad:setViewport
+              (+ (* f o.w) start-x)
+              start-y
+              o.w o.h
+              iw ih)))
         (tset o :-anim-data
           {:frame new-frame
            :time (- new-ti (* extra-frames frame-delay))
+           :old-anim o.anim
            : quad})))
     (when abu (abu o dt))))
 
